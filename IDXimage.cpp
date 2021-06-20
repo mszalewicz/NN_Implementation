@@ -1,0 +1,10 @@
+
+
+class IDXimage {
+
+    private:
+        
+    public: 
+
+
+}
