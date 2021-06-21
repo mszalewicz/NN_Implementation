@@ -1,0 +1,3 @@
+/home/urizen/projects/nn/NN_Implementation/build/CMakeFiles/rebuild_cache.dir
+/home/urizen/projects/nn/NN_Implementation/build/CMakeFiles/edit_cache.dir
+/home/urizen/projects/nn/NN_Implementation/build/CMakeFiles/NN.dir

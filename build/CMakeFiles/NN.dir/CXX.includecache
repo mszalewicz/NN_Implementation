@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/urizen/projects/nn/NN_Implementation/src/font.h
+string
+-
+
+/home/urizen/projects/nn/NN_Implementation/src/main.cpp
+iostream
+-
+string
+-
+unistd.h
+-
+vector
+-
+Eigen/Dense
+-
+font.h
+/home/urizen/projects/nn/NN_Implementation/src/font.h
+
