@@ -17,11 +17,10 @@ add_compile_options(-Wall -Wextra -pedantic -Werror)
 # Set the executable output folder to /build/bin
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# add_subdirectory(third_party)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen-3.3.9)
+# # add_subdirectory(third_party)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen-3.3.9)
 
-# #  Requirements
-# find_package(Eigen3 3.3 REQUIRED)
-# target_link_libraries (nni Eigen3::Eigen) <- add this line under add_executable()
+#  Requirements
+find_package(Eigen3 3.3 REQUIRED)
 
 add_subdirectory(src)

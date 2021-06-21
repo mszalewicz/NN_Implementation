@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/urizen/projects/nn/NN_Implementation/third_party/eigen-3.3.9
+CXX_INCLUDES = 
 
 CXX_FLAGS = -std=c++11 -Wall -Wextra -pedantic -Werror
 

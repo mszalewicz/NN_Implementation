@@ -10,7 +10,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "../third_party/eigen-3.3.9"
+  "/usr/include/eigen3"
   )
 
 # Targets to which this target links.
