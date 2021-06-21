@@ -7,4 +7,4 @@ class IDXimage {
     public: 
 
 
-}
+};
