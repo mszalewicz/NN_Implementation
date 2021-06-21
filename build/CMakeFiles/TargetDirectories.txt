@@ -1,6 +1,0 @@
-/home/urizen/projects/nn/NN_Implementation/build/CMakeFiles/rebuild_cache.dir
-/home/urizen/projects/nn/NN_Implementation/build/CMakeFiles/edit_cache.dir
-/home/urizen/projects/nn/NN_Implementation/build/src/CMakeFiles/rebuild_cache.dir
-/home/urizen/projects/nn/NN_Implementation/build/src/CMakeFiles/edit_cache.dir
-/home/urizen/projects/nn/NN_Implementation/build/src/CMakeFiles/nni.dir
-/home/urizen/projects/nn/NN_Implementation/build/src/CMakeFiles/font.dir

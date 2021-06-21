@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/nni.dir/main.cpp.o -o ../bin/nni  libfont.a 
