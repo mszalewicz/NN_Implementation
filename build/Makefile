@@ -67,7 +67,7 @@ RM = /home/urizen/cmake-3.18.4-Linux-x86_64/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/urizen/projects/nn/NN_Implementation/src
+CMAKE_SOURCE_DIR = /home/urizen/projects/nn/NN_Implementation
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/urizen/projects/nn/NN_Implementation/build
@@ -130,44 +130,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named NN
+# Target rules for targets named nni
 
 # Build rule for target.
-NN: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NN
-.PHONY : NN
+nni: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 nni
+.PHONY : nni
 
 # fast build rule for target.
-NN/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NN.dir/build.make CMakeFiles/NN.dir/build
-.PHONY : NN/fast
+nni/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/nni.dir/build.make src/CMakeFiles/nni.dir/build
+.PHONY : nni/fast
 
-main.o: main.cpp.o
+#=============================================================================
+# Target rules for targets named font
 
-.PHONY : main.o
+# Build rule for target.
+font: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 font
+.PHONY : font
 
-# target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NN.dir/build.make CMakeFiles/NN.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NN.dir/build.make CMakeFiles/NN.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/NN.dir/build.make CMakeFiles/NN.dir/main.cpp.s
-.PHONY : main.cpp.s
+# fast build rule for target.
+font/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/font.dir/build.make src/CMakeFiles/font.dir/build
+.PHONY : font/fast
 
 # Help Target
 help:
@@ -177,10 +163,8 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... NN"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... font"
+	@echo "... nni"
 .PHONY : help
 
 

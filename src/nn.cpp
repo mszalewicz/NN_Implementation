@@ -1,11 +1,5 @@
 #include <Eigen/Dense>
 
 class NN {
-    
-    void NN() {
-        return;
-    }
-    
-    
-
+  void NN() { return; }
 };

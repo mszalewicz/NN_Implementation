@@ -1,10 +1,4 @@
-
-
 class IDXimage {
-
-    private:
-        
-    public: 
-
-
+ private:
+ public:
 };

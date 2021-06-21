@@ -1,9 +1,9 @@
-#include <iostream>
-#include <string>
 #include <unistd.h>
-#include <vector>
 
 #include <Eigen/Dense>
+#include <iostream>
+#include <string>
+#include <vector>
 
 #include "font.h"
 
@@ -23,6 +23,7 @@
 
 // TODO:
 //        [] bootstrapping build pipeline
+//        [] clang-tidy
 //        [] adding unit test suite
 //        [] handle the IDX files
 //        [] neural network
@@ -36,27 +37,51 @@ void LeakyReLU(float &x) {
   /// Implementation of the Leaky ReLU activation function.
   /// https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLU
 
-  if (x < 0)
-    x *= 0.01;
+  if (x < 0) x *= 0.01;
 }
 
-// void usage() {
+void usage() {
+  std::cout << "Usage:\n"
+            << "\tsomething something";  // TODO
+}
 
-// }
-
+// int main(int argc, char **argv) {
 int main() {
 
-  Font font;
+  // using Matrix = Eigen::MatrixXd;
 
-  using Matrix = Eigen::MatrixXd;
 
-  std::string a = "test";
+  // Eigen::MatrixXd m(2,2);
+  // m(0,0) = 3;
+  // m(1,0) = 2.5;
+  // m(0,1) = -1;
+  // m(1,1) = m(1,0) + m(0,1);
+  // std::cout << m << std::endl;
 
-  std::cout << std::endl
-            << font.paint_text("Initializing application",
-                               font.BOLD + font.CYAN)
-            << std::endl
-            << std::endl;
+  Eigen::MatrixXd m1(2,2);
+
+  m1 <<  3, 2.5,
+       -1, 4;
+
+  std::cout << m1 << std::endl;
+
+
+
+ 
+  // ------------------------------------------------------------
+  // // Init font colorization
+  // Font font;
+
+  // std::cout << std::endl
+  //           << font.paint_text("Initializing application",
+  //                              font.BOLD + font.CYAN)
+  //           << std::endl
+  //           << std::endl;
+  // ------------------------------------------------------------
+
+
+
+
 
   // Matrix m1;
 

@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.18.4)
-project(NN VERSION 0.0.1)
+add_library(
+    font
+    font.h
+    font.cpp
+)
 
-add_executable(NN main.cpp)
+add_executable(nni main.cpp)
+target_link_libraries(nni font)
+# target_link_libraries (nni Eigen3::Eigen)
