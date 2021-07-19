@@ -1,10 +1,18 @@
-cmake_minimum_required(VERSION 3.21.0)
+cmake_minimum_required(VERSION 3.18.4)
 
 project(NN_Implementation VERSION 0.0.1)
 
 # set(CMAKE_CXX_COMPILER_NAMES  g++ clang++)
 
 # add_compile_options(-std=c++17)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # set(STRICT_COMPILE_FLAGS /std:c++latest)
+    add_compile_options(/std:c++latest /Wall) # /WX)
+else()
+    add_compile_options(-std=c++17 -Wall -Wextra -pedantic) #-Werror
+endif()
+
 
 # if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 #     set(STRICT_COMPILE_FLAGS -Werror=all
