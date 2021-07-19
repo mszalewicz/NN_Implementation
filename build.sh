@@ -9,4 +9,6 @@ cd build
 
 cmake ../
 
-cmake --build .
+cd ..
+
+cmake --build build

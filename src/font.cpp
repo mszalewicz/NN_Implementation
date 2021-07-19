@@ -10,7 +10,8 @@ const std::string Font::UNDERLINE = "\033[4m";
 const std::string Font::YELLOW = "\033[93m";
 
 std::string Font::paint_text(std::string original_string,
-                             const std::string& color_name) {
+                             const std::string& color_name) 
+{
   const std::string ENDC = "\033[0m";
 
   original_string.insert(0, color_name);
