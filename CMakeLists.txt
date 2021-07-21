@@ -8,7 +8,7 @@ project(NN_Implementation VERSION 0.0.1)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # set(STRICT_COMPILE_FLAGS /std:c++latest)
-    add_compile_options(/std:c++latest /Wall) # /WX)
+    add_compile_options(/std:c++latest ) # /Wall /WX)
 else()
     add_compile_options(-std=c++17 -Wall -Wextra -pedantic) #-Werror
 endif()

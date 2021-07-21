@@ -1,8 +1,13 @@
+#include <cstddef>
+#include <cstdint>
+#include <exception>
+#include <filesystem>
+#include <fstream> 
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cstdint>
 
+#include "errorlogger.h"
 #include "font.h"
 
 //        [] handle the IDX files
@@ -14,32 +19,102 @@
 //        [] error logging
 //        [] documentation
 
-void LeakyReLU(float &x) 
+void LeakyReLU(float &x)
 {
-    /// Implementation of the Leaky ReLU activation function.
-    /// https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLU
-
-    if (x < 0) { x *= 0.01; }
+    constexpr auto kSlopeCoefficient = 0.01f; 
+    if (x < 0) { x *= kSlopeCoefficient; }
 }
 
-void usage() 
+// void Usage() 
+// {
+//     // std::string description = 
+//     // "
+//     // test
+//     // ";
+
+//     std::cout << "\n" 
+//               << Font::PaintText("Usage: ", Font::YELLOW) << "nni arg1 arg2"
+//               << "\n\n"
+//               << "\t" << "something something";  // TODO
+// }
+
+// struct label
+// {
+//     std::uint32_t 
+// };
+
+bool ReadFile(std::vector<std::byte> &buffer, std::string &file_path)
 {
-    // std::string description = 
-    // "
-    // test
-    // ";
+    std::uintmax_t file_size;
+    std::fstream file_stream;
     
-    std::cout << "\n" 
-              << Font::paint_text("Usage: ", Font::YELLOW) << "nni arg1 arg2"
-              << "\n\n"
-              << "\t" << "something something";  // TODO
+    try 
+    {
+        file_size = std::filesystem::file_size(file_path);
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << Font::PaintText(e.what(), Font::RED) << std::endl;
+
+        return false;
+    }
+
+    try 
+    {
+        file_stream.open(file_path, std::ios::in | std::ios::binary);
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+
+        return false;
+    }
+
+    buffer = std::vector<std::byte>(file_size);
+    file_stream.read((char*)buffer.data(), buffer.size());
+
+    file_stream.close();
+
+    return true;
 }
 
-int main(int argc, char **argv) 
+int main(int argc, char *argv[]) 
 {
-    if (argc < 2) { usage(); }
+   // if (argc < 2) { usage(); }
 
-    std::cout << "test" << std::endl;
+
+    std::string logger_directory = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation";
+
+    // ErrorLogger logger = ErrorLogger::ErrorLogger(logger_directory);
+    // ErrorLogger logger();
+
+
+    std::string errMsg = "An error :(";
+
+    ErrorLogger logger = ErrorLogger(logger_directory);
+    logger.RecordEvent(errMsg);
+
+
+    // std::string file_path = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation/src/nn.cpp";
+    std::string file_path = "C:/Usersadsafsd/Urizen/Documents/Projekty/cpp/NN_Implementation/src/nn.cpp";
+
+    std::vector<std::byte> buffer;
+
+    if( !ReadFile(buffer, file_path) )
+    {
+        std::cout << "Application could not open the file " << file_path;
+        return 0;
+    }
+
+    // std::experimental::filesystem
+    // std::filesystem::file_size(filepath);
+    // filesystem::fil
+
+
+
+
+
+    // std::cout << std::to_string(file_size) << std::endl;
 
     return 0;
 }
