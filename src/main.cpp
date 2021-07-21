@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "errorlogger.h"
+#include "error_logger.h"
 #include "font.h"
 
 //        [] handle the IDX files
@@ -37,11 +37,6 @@ void LeakyReLU(float &x)
 //               << "\n\n"
 //               << "\t" << "something something";  // TODO
 // }
-
-// struct label
-// {
-//     std::uint32_t 
-// };
 
 bool ReadFile(std::vector<std::byte> &buffer, std::string &file_path)
 {
@@ -78,6 +73,11 @@ bool ReadFile(std::vector<std::byte> &buffer, std::string &file_path)
     return true;
 }
 
+// void ReadSettigns()
+// {
+//     std::fstream settings_file();
+// }
+
 int main(int argc, char *argv[]) 
 {
    // if (argc < 2) { usage(); }
@@ -105,16 +105,6 @@ int main(int argc, char *argv[])
         std::cout << "Application could not open the file " << file_path;
         return 0;
     }
-
-    // std::experimental::filesystem
-    // std::filesystem::file_size(filepath);
-    // filesystem::fil
-
-
-
-
-
-    // std::cout << std::to_string(file_size) << std::endl;
 
     return 0;
 }
