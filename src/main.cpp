@@ -19,6 +19,7 @@
 //        [] error logging
 //        [] documentation
 
+
 void LeakyReLU(float &x)
 {
     constexpr auto kSlopeCoefficient = 0.01f; 
@@ -78,25 +79,22 @@ bool ReadFile(std::vector<std::byte> &buffer, std::string &file_path)
 //     std::fstream settings_file();
 // }
 
+
+struct Image
+{
+    std::vector<std::pair<uint>> pixels;
+};
+
+
+
 int main(int argc, char *argv[]) 
 {
    // if (argc < 2) { usage(); }
-
-
-    std::string logger_directory = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation";
-
-    // ErrorLogger logger = ErrorLogger::ErrorLogger(logger_directory);
-    // ErrorLogger logger();
-
 
     std::string errMsg = "An error :(";
 
     ErrorLogger logger = ErrorLogger(logger_directory);
     logger.RecordEvent(errMsg);
-
-
-    // std::string file_path = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation/src/nn.cpp";
-    std::string file_path = "C:/Usersadsafsd/Urizen/Documents/Projekty/cpp/NN_Implementation/src/nn.cpp";
 
     std::vector<std::byte> buffer;
 
@@ -105,6 +103,11 @@ int main(int argc, char *argv[])
         std::cout << "Application could not open the file " << file_path;
         return 0;
     }
+
+    int number_of_images;
+    std::vector<Image> images = std::vector<Image>(number_of_images); 
+
+    Image number_image;
 
     return 0;
 }

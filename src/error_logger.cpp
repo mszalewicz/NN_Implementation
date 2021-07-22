@@ -8,8 +8,6 @@
 
 ErrorLogger::ErrorLogger(std::string &path)
 {
-    std::string current_date = std::chrono::format("%y_%m_%d", std::chrono::system_clock::now());
-    std::cout << "\n" << current_date << "\n";
     this->output_file_path = path + "/log.txt"; 
 }
 

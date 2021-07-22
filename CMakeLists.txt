@@ -34,17 +34,13 @@ endif()
 # endif()
 
 # Enables clang-tidy during compilation
-set(CMAKE_CXX_CLANG_TIDY 
-    clang-tidy;
-    -header-filter=.;
-    -checks=*,-google-readability-todo,-llvmlibc-*,-fuchsia-*,-cert-*;)
+# set(CMAKE_CXX_CLANG_TIDY 
+#     clang-tidy;
+#     -header-filter=.;
+#     -checks=*,-google-readability-todo,-llvmlibc-*,-fuchsia-*,-cert-*;)
 
 
 # Set the executable output folder to /build/bin
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-
-
-# find_package(Eigen3 3.3 REQUIRED)
 
 add_subdirectory(src)
