@@ -6,21 +6,26 @@
 #include "error_logger.h"
 #include "font.h"
 
-ErrorLogger::ErrorLogger(std::string &path)
+ErrorLogger::ErrorLogger(std::string& path)
 {
-    this->output_file_path = path + "/log.txt"; 
+    output_file_path = path + "/log.txt"; 
 }
 
-void ErrorLogger::RecordEvent(std::string &message)
+void ErrorLogger::Init(std::string& path)
+{
+    output_file_path = path + "/log.txt";
+}
+
+void ErrorLogger::RecordEvent(std::string message)
 {
     std::fstream file_stream;
 
     try
     {
-        file_stream.open(this->output_file_path,
+        file_stream.open(output_file_path,
                          std::ios::out | std::ios::app);
     }
-    catch(std::exception &e)
+    catch(std::exception& e)
     {
         std::cerr << "ErrorLogger::Run(): "
                   << e.what() 
@@ -35,3 +40,5 @@ void ErrorLogger::RecordEvent(std::string &message)
                 << "\n\n---------------------------------------\n\n";
     file_stream.close();
 }
+
+std::string ErrorLogger::output_file_path = "";
