@@ -19,36 +19,6 @@
 //        [] error logging
 //        [] documentation
 
-
-void LeakyReLU(float &x)
-{
-    constexpr auto kSlopeCoefficient = 0.01f;
-    if (x < 0) { x *= kSlopeCoefficient; }
-}
-
-// void Usage() 
-// {
-//     // std::string description = 
-//     // "
-//     // test
-//     // ";
-
-//     std::cout << "\n" 
-//               << Font::PaintText("Usage: ", Font::YELLOW) << "nni arg1 arg2"
-//               << "\n\n"
-//               << "\t" << "something something";  // TODO
-// }
-
-struct Pixel
-{ 
-    unsigned int x, y, value;
-};
-
-struct Image
-{
-    std::vector<Pixel> pixels;
-};
-
 bool ReadFile(std::vector<std::byte> &buffer, std::string &file_path)
 {
     std::uintmax_t file_size;
@@ -92,24 +62,24 @@ std::tuple<std::vector<unsigned int>, bool> ReadLabels(std::string &file_path)
         return {{}, false};
     }
 
-    auto magic_number = int(
-                                (unsigned char)(buffer.at(0)) << 24 |
-                                (unsigned char)(buffer.at(1)) << 16 |
-                                (unsigned char)(buffer.at(2)) << 8  |
-                                (unsigned char)(buffer.at(3))
-                            );
+    auto magic_number = unsigned int(
+                                        (unsigned char)(buffer.at(0)) << 24 |
+                                        (unsigned char)(buffer.at(1)) << 16 |
+                                        (unsigned char)(buffer.at(2)) << 8  |
+                                        (unsigned char)(buffer.at(3))
+                                    );
 
     if(magic_number != 2049) {
         std::cout << "Invalid file data in '" << file_path << "'.\n\n";
         return {{}, false};
     }
 
-    auto number_of_entries = int(
-                                    (unsigned char)(buffer.at(4)) << 24 |
-                                    (unsigned char)(buffer.at(5)) << 16 |
-                                    (unsigned char)(buffer.at(6)) << 8  |
-                                    (unsigned char)(buffer.at(7))
-                                );
+    auto number_of_entries = unsigned int(
+                                             (unsigned char)(buffer.at(4)) << 24 |
+                                             (unsigned char)(buffer.at(5)) << 16 |
+                                             (unsigned char)(buffer.at(6)) << 8  |
+                                             (unsigned char)(buffer.at(7))
+                                         );
 
     auto labels = std::vector<unsigned int>(number_of_entries);
 
@@ -121,7 +91,7 @@ std::tuple<std::vector<unsigned int>, bool> ReadLabels(std::string &file_path)
     return {labels, true};
 }
 
-std::tuple<std::vector<Image>, bool> ReadImages(std::string &file_path)
+std::tuple<std::vector<std::vector<unsigned int>>, bool> ReadImages(std::string &file_path)
 {
     std::vector<std::byte> buffer;
 
@@ -131,114 +101,98 @@ std::tuple<std::vector<Image>, bool> ReadImages(std::string &file_path)
         return {{}, false};
     }
 
-    auto magic_number = int(
-                          (unsigned char)(buffer.at(0)) << 24 |
-                          (unsigned char)(buffer.at(1)) << 16 |
-                          (unsigned char)(buffer.at(2)) << 8  |
-                          (unsigned char)(buffer.at(3))
-                      );
+    auto magic_number = unsigned int(
+                                        (unsigned char)(buffer.at(0)) << 24 |
+                                        (unsigned char)(buffer.at(1)) << 16 |
+                                        (unsigned char)(buffer.at(2)) << 8  |
+                                        (unsigned char)(buffer.at(3))
+                                    );
 
     if(magic_number != 2051) {
         std::cout << "Invalid file data in '" << file_path << "'.\n\n";
         return {{}, false};
     }
 
-    auto number_of_entries = int(
-                                (unsigned char)(buffer.at(4)) << 24 |
-                                (unsigned char)(buffer.at(5)) << 16 |
-                                (unsigned char)(buffer.at(6)) << 8  |
-                                (unsigned char)(buffer.at(7))
-                            );
+    auto number_of_images = unsigned int(
+                                             (unsigned char)(buffer.at(4)) << 24 |
+                                             (unsigned char)(buffer.at(5)) << 16 |
+                                             (unsigned char)(buffer.at(6)) << 8  |
+                                             (unsigned char)(buffer.at(7))
+                                         );
 
-    auto number_of_rows = int(
-                                 (unsigned char)(buffer.at(8)) << 24 |
-                                 (unsigned char)(buffer.at(9)) << 16 |
-                                 (unsigned char)(buffer.at(10)) << 8  |
-                                 (unsigned char)(buffer.at(11))
-                             );
+    auto number_of_rows = unsigned int(
+                                          (unsigned char)(buffer.at(8)) << 24 |
+                                          (unsigned char)(buffer.at(9)) << 16 |
+                                          (unsigned char)(buffer.at(10)) << 8  |
+                                          (unsigned char)(buffer.at(11))
+                                      );
 
-    auto number_of_columns = int(
-                                    (unsigned char)(buffer.at(12)) << 24 |
-                                    (unsigned char)(buffer.at(13)) << 16 |
-                                    (unsigned char)(buffer.at(14)) << 8  |
-                                    (unsigned char)(buffer.at(15))
-                                );
+    auto number_of_columns =  unsigned  int(
+                                               (unsigned char)(buffer.at(12)) << 24 |
+                                               (unsigned char)(buffer.at(13)) << 16 |
+                                               (unsigned char)(buffer.at(14)) << 8  |
+                                               (unsigned char)(buffer.at(15))
+                                           );
 
-    // Reconstruct images
 
-    std::vector<Image> numbers;
-    Image number_image;
-    unsigned int x = 0, y = 0;
- 
-    for(unsigned int i = 16; i < buffer.size(); ++i)
-    {   
-        number_image.pixels.push_back( {x, y, (unsigned int) buffer.at(i)} );
-        
-        ++x;
+    
 
-        if(x == number_of_columns) 
+    // Constructing images from data:
+
+    int pixel_amount = number_of_rows * number_of_columns;
+    
+    std::vector<std::vector<unsigned int>> numbers = std::vector<std::vector<unsigned int>>(number_of_images);
+    std::vector<unsigned int> image_of_number = std::vector<unsigned int>(pixel_amount);
+    
+
+    for(auto i = 0; i < number_of_images; ++i)
+    {
+        for (int j = 0; j < pixel_amount; ++j)
         {
-            x = 0;
-            ++y; 
-        } 
-        
-        if (y == number_of_rows)
-        {
-            numbers.push_back(number_image);    
-            
-            number_image.pixels.clear();
-
-            x = 0;
-            y = 0;
+            image_of_number.at(j) = (unsigned int) buffer.at(j+ 16 + (pixel_amount * i));
         }
+        numbers.at(i) = image_of_number;
     }
 
     return {numbers, true};
 }
 
+// TODO: to remove when the visual represenation is in place
+void PrintNumbers(std::vector<std::vector<unsigned int>> &test_numbers, int number_of_images_to_print)
+{
+    for (int i = 0; i < number_of_images_to_print; ++i)
+    {
+        auto pixels = test_numbers.at(i);
+
+        for (int y = 0; y < 28; ++y)
+        {
+            for(int x = 0; x < 28; ++x)
+            {   
+                if(pixels.at(x+y*28) > 0 && pixels.at(x+y*28) < 128) {std::cout << "x";}
+                else if(pixels.at(x+y*28) > 128) {std::cout << "@";}
+                else {std::cout << ".";}        
+            }
+            std::cout << "\n";
+        }
+
+        std::cout << "\n\n\n";
+    }
+}
 
 int main(int argc, char *argv[]) 
 {
-   // if (argc < 2) { usage(); }
+
+    // std::string logger_directory = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation";
+    // ErrorLogger::Init(logger_directory);
 
 
 
+    // auto [test_labels, test_labels_read_correctly] = ReadLabels(labels_path);
+    auto [test_numbers, test_numbers_read_correctly] = ReadImages(numbers_path);
 
-    auto [test_labels, test_labels_read_bool] = ReadLabels(labels_path);
-    auto [test_numbers, test_numbers_read_bool] = ReadImages(numbers_path);
-
-    // for (int i = 0; i < 40; ++i)
+    // if(test_numbers_read_correctly)
     // {
-    //     Image image_tmp = numbers.at(i);
-
-    //     for (int y = 0; y < number_of_rows; ++y)
-    //     {
-    //         for(int x = 0; x < number_of_columns; ++x)
-    //         {   
-    //             if(image_tmp.pixels.at(x+y*28).value > 0 && image_tmp.pixels.at(x+y*28).value < 128) {std::cout << "x";}
-    //             else if(image_tmp.pixels.at(x+y*28).value > 128) {std::cout << "@";}
-    //             else {std::cout << ".";}        
-    //         }
-    //         std::cout << "\n";
-    //     }
-
-    //     std::cout << "\n\n\n";
-    // }
-
-
-    // Image image_tmp = numbers.at(7);
-
-    // for (int y = 0; y < number_of_rows; ++y)
-    // {
-    //     for(int x = 0; x < number_of_columns; ++x)
-    //     {   
-    //         // if(image_tmp.pixels.at(x+y*28).value > 0) {std::cout << "X";}
-    //         // else {std::cout << ".";}       
-    //         std::cout << "x': " << image_tmp.pixels.at(x+y*28).x << " y': " << image_tmp.pixels.at(x+y*28).y << "\n";
-    //         std::cout << "x: " << x << " y: " << y << "\n";
-    //         std::cout << "\n";
-    //     }
-    //     std::cout << "\n";
+    //     PrintNumbers(test_numbers, 3);    
     // }
     
     return 0;
