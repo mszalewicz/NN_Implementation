@@ -55,3 +55,19 @@ Matrix operator*(const Matrix &m1, double scalar)
 
 	return result_of_operation;
 }
+
+Matrix operator-(const Matrix &m1, Matrix &m2)
+{
+	int number_of_rows_m1 = m1.values.size();
+	int number_of_columns_m1 = m1.values[0].size();
+
+	Matrix result_of_operation = Matrix(number_of_rows_m1, number_of_columns_m1);
+
+	for (auto i = 0; i < number_of_rows_m1; ++i)
+		for (auto j = 0; j < number_of_columns_m1.size(); ++j)
+		{
+			result_of_operation.values[i][j] = m1.values[i][j] - m2.values[i][j]; 
+		}
+
+	return result_of_operation;
+}

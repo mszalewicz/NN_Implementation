@@ -30,19 +30,39 @@ void NeuralNetwork::feed_forward()
 
 void NeuralNetwork::back_propagation()
 {
-    // constexpr auto learning_rate = 0.5;
+    constexpr auto learning_rate = 0.5;
 
-    // auto m = this->input.values.size();
+    auto m = this->input.values.size();
 
-    // auto output_copy = output;
+    auto output_copy = this->output;
+    sigmoid_derivative(output_copy);
 
-    // auto derived_weights2 = -(1/m) * transpose()
+    auto layer_1_copy = this->layer_1;
+    LeakyReLU_derivative(layer_1_copy);
 
-    //   d_weights2=-(1/m)*np.dot(self.layer1.T,(self.y-self.output)*sigmoid_derivative(self.output))
-    //   d_weights1=-(1/m)*np.dot(self.input.T,(np.dot((self.y-self.output)*sigmoid_derivative(self.output),self.weights2.T)*ReLU_derivative(self.layer1)))
+    //TODO Double check logic below
 
-    //   self.weights2=self.weights2 - lr*d_weights2
-    //   self.weights1=self.weights1 - lr*d_weights1
+    auto derived_weights2 = -(1/m)*(transpose(this->layer_1)*matrix_piecewise_multiplication((this->y - this->output_layer), output_copy));
+    auto derived_weights1 = -(1/m)*(transpose(this->input)*((matrix_piecewise_multiplication((this->y - this->output_layer), output_copy)*transpose(this->weights_2)), layer_1_copy));
+
+    this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
+    this->weights_1 = this->weights_1 - learning_rate * derived_weights1; 
+}
+
+Matrix matrix_piecewise_multiplication(Matrix &m1, Matrix &m2)
+{
+    auto number_of_rows_m1 = m1.values.size();
+    auto number_of_columns_m1 = m1.values[0].size();
+
+    Matrix result_of_operation = Matrix(number_of_rows_m1, number_of_columns_m1);
+
+    for (auto i = 0; i < number_of_rows_m1; ++i)
+        for (auto j = 0; j < number_of_columns_m1.size(); ++j)
+        {
+            result_of_operation.values[i][j] = m1.values[i][j] * m2.values[i][j]; 
+        }
+
+    return result_of_operation;  
 }
 
 void NeuralNetwork::apply_piecewise(Matrix &m, void (*func)(double&))

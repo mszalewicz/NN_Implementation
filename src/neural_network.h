@@ -24,5 +24,6 @@ class NeuralNetwork
 		void apply_piecewise(Matrix &m, void (*func)(double&));
 
 		Matrix transpose(Matrix &m);
+		Matrix matrix_piecewise_multiplication(Matrix &m1, Matrix &m2);
 		Matrix seed_normal_random_values_into_matrix(int rows, int columns);
 };

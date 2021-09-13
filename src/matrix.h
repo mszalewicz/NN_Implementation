@@ -16,4 +16,5 @@ class Matrix
 		// ~Matrix();
 		friend Matrix operator*(const Matrix &m1, const Matrix &m2);
 		friend Matrix operator*(const Matrix &m1, double scalar);
+		friend Matrix operator-(const Matrix &m1, Matrix &m2);
 };
