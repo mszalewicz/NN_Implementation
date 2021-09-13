@@ -3,9 +3,26 @@
 class NeuralNetwork
 {
 	private:
-		Matrix w1;
-		Matrix w2;
+		Matrix input;
+		Matrix layer_1;
+		Matrix y;
+		Matrix weights_1;
+		Matrix weights_2;
+		Matrix output_layer;
 
 	public:
-		NeuralNetwork();
+		NeuralNetwork(Matrix x_input, Matrix y_input, int height_of_hidden_layer);
+
+		void static LeakyReLU(double &x);
+		void static LeakyReLU_derivative(double &x);
+		void static sigmoid(double &x);
+		void static sigmoid_derivative(double &x);
+
+		void feed_forward();
+		void back_propagation();
+
+		void apply_piecewise(Matrix &m, void (*func)(double&));
+
+		Matrix transpose(Matrix &m);
+		Matrix seed_normal_random_values_into_matrix(int rows, int columns);
 };

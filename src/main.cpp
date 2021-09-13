@@ -7,8 +7,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include <chrono>
-#include <random>
+
 
 #include "error_logger.h"
 #include "font.h"
@@ -196,14 +195,7 @@ int main(int argc, char *argv[])
     // Matrix weights_1 = Matrix();
     // Matrix weights_2 = Matrix();
 
-      unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-      std::default_random_engine generator (seed);
 
-      std::normal_distribution<double> distribution (0.0,1.0);
-
-      std::cout << "some Normal-distributed(0.0,1.0) results:" << std::endl;
-      for (int i=0; i<10; ++i)
-        std::cout << distribution(generator) << std::endl;
 
     return 0;
 }
