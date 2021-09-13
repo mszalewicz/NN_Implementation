@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18.4)
 
-project(NN_Implementation VERSION 0.0.1)
+project(NN_Implementation VERSION 0.1.0)
 
 # set(CMAKE_CXX_COMPILER_NAMES  g++ clang++)
 
@@ -9,6 +9,8 @@ project(NN_Implementation VERSION 0.0.1)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # set(STRICT_COMPILE_FLAGS /std:c++latest)
     add_compile_options(/std:c++latest) # /Wall /WX)
+    # remove_definitions(/RTC1)
+    # set(/std:c++latest /Ox)
 else()
     add_compile_options(-std=c++20) # -Wall -Wextra -pedantic #-Werror
 endif()
@@ -43,4 +45,5 @@ endif()
 # Set the executable output folder to /build/bin
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# add_subdirectory(external/imgui)
 add_subdirectory(src)

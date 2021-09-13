@@ -1,4 +1,0 @@
-class NN 
-{
-    void NN();
-};

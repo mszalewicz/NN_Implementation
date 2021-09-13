@@ -21,11 +21,19 @@ if ( !(Test-Path -Path './build') )
 	cd ..
 }
 
-Write-Host "`n--- Building ---`n" -ForegroundColor Yellow
-cmake --build build
-
-if ( ($args[0] -eq "run") -and ($?) )
+if($args -contains "release")
 {
-	Write-Host "`nApp execution:`n" -ForegroundColor Magenta
+	Write-Host "`n--- Building ---`n" -ForegroundColor Yellow
+	cmake --build  .\build\ --config Release
+}
+else
+{
+	Write-Host "`n--- Building ---`n" -ForegroundColor Yellow
+	cmake --build  .\build\	
+}
+
+if(($args -contains "run") -and ($?))
+{
+	Write-Host "`nApp starting ...`n" -ForegroundColor Magenta
 	.\build\src\Debug\nni.exe
 }

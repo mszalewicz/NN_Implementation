@@ -2,14 +2,17 @@
 #include <cstdint>
 #include <exception>
 #include <filesystem>
-#include <fstream> 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <tuple>
 #include <vector>
+#include <chrono>
+#include <random>
 
 #include "error_logger.h"
 #include "font.h"
+#include "matrix.h"
 
 //        [] neural network
 //        [] adding unit test suite
@@ -69,6 +72,7 @@ std::tuple<std::vector<unsigned int>, bool> ReadLabels(std::string &file_path)
                                         (unsigned char)(buffer.at(3))
                                     );
 
+    // Checks if the the number corresponds to the MNIST specification for IDX file format
     if(magic_number != 2049) {
         std::cout << "Invalid file data in '" << file_path << "'.\n\n";
         return {{}, false};
@@ -134,9 +138,6 @@ std::tuple<std::vector<std::vector<unsigned int>>, bool> ReadImages(std::string 
                                                (unsigned char)(buffer.at(15))
                                            );
 
-
-    
-
     // Constructing images from data:
 
     int pixel_amount = number_of_rows * number_of_columns;
@@ -185,15 +186,99 @@ int main(int argc, char *argv[])
     // std::string logger_directory = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation";
     // ErrorLogger::Init(logger_directory);
 
-
+    std::string labels_path = "C:/Users/Urizen/Music/ungzipped/t10k-labels-idx1-ubyte";
+    // std::string numbers_path = "C:/Users/Urizen/Music/ungzipped/t10k-images-idx3-ubyte";
+    std::string numbers_path = "C:/Users/Urizen/Music/ungzipped/train-images-idx3-ubyte";
 
     // auto [test_labels, test_labels_read_correctly] = ReadLabels(labels_path);
     auto [test_numbers, test_numbers_read_correctly] = ReadImages(numbers_path);
 
-    // if(test_numbers_read_correctly)
-    // {
-    //     PrintNumbers(test_numbers, 3);    
-    // }
-    
+    // Matrix weights_1 = Matrix();
+    // Matrix weights_2 = Matrix();
+
+      unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+      std::default_random_engine generator (seed);
+
+      std::normal_distribution<double> distribution (0.0,1.0);
+
+      std::cout << "some Normal-distributed(0.0,1.0) results:" << std::endl;
+      for (int i=0; i<10; ++i)
+        std::cout << distribution(generator) << std::endl;
+
     return 0;
 }
+
+    // if(test_numbers_read_correctly)
+    // {
+    //     PrintNumbers(test_numbers, 5);    
+    // }
+
+// Test
+    // std::vector<unsigned int> v1{1, 1, 1};
+    // std::vector<unsigned int> v2{2, 2, 2};
+    // std::vector<unsigned int> v3{3, 2, 2};
+    // std::vector<unsigned int> v4{4, 2, 2};
+
+    // std::vector<std::vector<unsigned int>> c1;
+
+    // c1.push_back(v1);
+    // c1.push_back(v1);
+
+    // for(auto i = 0; i < c1.size(); ++i)
+    //     for(auto j = 0; j < c1[0].size(); ++j)
+    //     {
+    //         std::cout << c1[i][j];
+    //         if(j == c1[0].size() - 1)
+    //             std::cout << std::endl;
+    //     }
+
+    // std::cout << std::endl;
+
+    // std::vector<std::vector<unsigned int>> c2;
+
+    // c2.push_back(v2);
+    // c2.push_back(v3);
+    // c2.push_back(v4);
+
+    // for(auto i = 0; i < c2.size(); ++i)
+    //     for(auto j = 0; j < c2[0].size(); ++j)
+    //     {
+    //         std::cout << c2[i][j];
+    //         if(j == c2[0].size() - 1)
+    //             std::cout << std::endl;
+    //     }
+
+    // std::cout << std::endl;
+
+
+    // Matrix m1 = Matrix(c1);
+
+    // for(auto i = 0; i < m1.values.size(); ++i)
+    //     for(auto j = 0; j < m1.values[0].size(); ++j)
+    //     {
+    //         std::cout << m1.values[i][j];
+    //         if(j == m1.values[0].size() - 1)
+    //             std::cout << std::endl;
+    //     }
+    // std::cout << std::endl;
+
+    // Matrix m2 = Matrix(c2);
+
+    // for(auto i = 0; i < m2.values.size(); ++i)
+    //     for(auto j = 0; j < m2.values[0].size(); ++j)
+    //     {
+    //         std::cout << m2.values[i][j];
+    //         if(j == m2.values[0].size() - 1)
+    //             std::cout << std::endl;
+    //     }
+    // std::cout << std::endl;
+
+    // Matrix m3 = m1 * m2;
+    
+    // for(auto i = 0; i < m1.values.size(); ++i)
+    //     for(auto j = 0; j < m2.values[0].size(); ++j)
+    //     {
+    //         std::cout << m3.values[i][j];
+    //         if(j == m2.values[0].size() - 1)
+    //             std::cout << std::endl;
+    //     }

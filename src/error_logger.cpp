@@ -33,11 +33,16 @@ void ErrorLogger::RecordEvent(std::string message)
     }
 
     std::cerr << Font::PaintText(message, Font::RED) << std::endl;
-    file_stream << "[" 
-                << std::chrono::system_clock::now() 
-                << "]\n\n"
-                << message
-                << "\n\n---------------------------------------\n\n";
+
+    if(output_file_path != (std::string)"")
+    {
+        file_stream << "[" 
+                    << std::chrono::system_clock::now() 
+                    << "]\n\n"
+                    << message
+                    << "\n\n---------------------------------------\n\n";        
+    }
+
     file_stream.close();
 }
 
