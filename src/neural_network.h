@@ -20,15 +20,14 @@ class NeuralNetwork
 		void static sigmoid(double &x);
 		void static sigmoid_derivative(double &x);
 
+		void find_scales();
+		void scale_to_standard();
 		void feed_forward();
 		void back_propagation();
-		Matrix predict(Matrix &x);
 		void train(int number_of_epochs);
-
 		void apply_piecewise(Matrix &m, void (*func)(double&));
 
-		void find_scales();
-
+		Matrix predict(Matrix &x);
 		Matrix transpose(Matrix &m);
 		Matrix matrix_piecewise_multiplication(Matrix m1, Matrix m2);
 		Matrix seed_normal_random_values_into_matrix(int rows, int columns);

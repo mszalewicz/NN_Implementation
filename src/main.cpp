@@ -425,11 +425,19 @@ int main(int argc, char *argv[])
     // -----------------------------------------------------------------------------------------------
 
     AcknowledgeStepStart("Bootstrapping neural network");
+    ConfirmExecution();
 
     int height_of_hidden_layer = 4; 
 
     NeuralNetwork nn = NeuralNetwork(features, labels, height_of_hidden_layer);
     nn.find_scales();
+    nn.scale_to_standard();
+
+    AcknowledgeStepStart("Neural network training");
+    nn.train(1);
+    ConfirmExecution();
+
+
 
     // AcknowledgeStepStart("Normalize features");
     // auto [normalization_done] = normal_scaler(features);

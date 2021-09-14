@@ -21,12 +21,6 @@ NeuralNetwork::NeuralNetwork(Matrix x_input, Matrix y_input, int height_of_hidde
 
 void NeuralNetwork::find_scales()
 {
-    // Standard Deviation of training samples
-    double standard_deviation = 0;
-
-    // Mean of training sample
-    double mean = 0;
-
     std::vector<std::vector<double>> scales;
 
     auto number_of_rows_m = this->input.values.size();
@@ -53,28 +47,36 @@ void NeuralNetwork::find_scales()
         {
             counter += std::pow((this->input.values[i][j] - scales[j][0]), 2);
         }
-        scales[j][1] = std::sqrt(counter/(number_of_rows_m-1));
+        scales[j][1] = std::sqrt(counter/(number_of_rows_m)); // or /(number_of_rows_m - 1)
         counter = 0;
     }
 
     this->scaling_factors = scales;
 
     // -----------------------------------------------------------------------------------------------
-    // Printing results
+    // Print results
     // -----------------------------------------------------------------------------------------------
 
-    std::cout << std::endl << "Feature scales:" << std::endl << std::endl;
+    // std::cout << std::endl << "Feature scales:" << std::endl << std::endl;
 
-    for(auto i : this->scaling_factors)
-    {
-        std::cout << "\tmean = " << std::setw(7) << i[0] << " sd = " << i[1] << std::endl;
-    }
+    // for(auto i : this->scaling_factors)
+    // {
+    //     std::cout << "\tmean = " << std::setw(7) << i[0] << " sd = " << i[1] << std::endl;
+    // }
 }
 
-// void scale_to_standard(Matrix &m)
-// {   
+void NeuralNetwork::scale_to_standard()
+{   
+    auto number_of_rows_m = this->input.values.size();
+    auto number_of_columns_m = this->input.values[0].size();
 
-// }
+    // Applying normalization per feature set
+    for(auto i = 0; i < number_of_rows_m; ++i)
+        for(auto j = 0; j < number_of_columns_m; ++j)
+        {
+            this->input.values[i][j] = (this->input.values[i][j] - this->scaling_factors[j][0]) / this->scaling_factors[j][0];    
+        }
+}
 
 //TODO
 void NeuralNetwork::train(int number_of_epochs)
@@ -83,7 +85,9 @@ void NeuralNetwork::train(int number_of_epochs)
     {
         feed_forward();
 
+        // TODO <- round the results
 
+        back_propagation();
 
 
         // for(auto value : this->output_layer.values)
@@ -127,7 +131,7 @@ void NeuralNetwork::back_propagation()
     auto layer_1_copy = this->layer_1;
     apply_piecewise(layer_1_copy, &LeakyReLU_derivative);
 
-    //TODO Double check logic below
+    // //TODO Double check logic below
 
     auto derived_weights2 = -(1/m) 
                             
@@ -165,7 +169,7 @@ void NeuralNetwork::back_propagation()
                                                                 )
                              );
 
-    this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
+    // this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
     this->weights_1 = this->weights_1 - learning_rate * derived_weights1;
 }
 
