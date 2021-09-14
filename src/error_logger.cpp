@@ -32,6 +32,13 @@ void ErrorLogger::RecordEvent(std::string message)
                   << std::endl;
     }
 
+    std::cout << "\b\b\b" 
+              << Font::PaintText("[", Font::BLUE) 
+              << Font::PaintText("x", Font::RED) 
+              << Font::PaintText("]", Font::BLUE) 
+              << std::endl 
+              << std::endl;
+
     std::cerr << Font::PaintText(message, Font::RED) << std::endl;
 
     if(output_file_path != (std::string)"")

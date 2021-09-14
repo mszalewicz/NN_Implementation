@@ -1,6 +1,8 @@
 #include <chrono>
 #include <cmath>
 #include <random>
+#include <iostream>
+#include <iomanip>
 
 #include "matrix.h"
 #include "neural_network.h"
@@ -17,15 +19,100 @@ NeuralNetwork::NeuralNetwork(Matrix x_input, Matrix y_input, int height_of_hidde
     this->output_layer = Matrix(this->y.number_of_rows, this->y.number_of_columns); // populated with zeros
 }
 
+void NeuralNetwork::find_scales()
+{
+    // Standard Deviation of training samples
+    double standard_deviation = 0;
+
+    // Mean of training sample
+    double mean = 0;
+
+    std::vector<std::vector<double>> scales;
+
+    auto number_of_rows_m = this->input.values.size();
+    auto number_of_columns_m = this->input.values[0].size();
+
+
+    // Calculating mean for each feature set
+    double counter = 0;
+
+    for(auto j = 0; j < number_of_columns_m; ++j)
+    {
+        for(auto i = 0; i < number_of_rows_m; ++i)
+        {
+            counter += this->input.values[i][j];
+        }
+        scales.push_back( {counter/number_of_rows_m, 0} );
+        counter = 0;
+    }
+
+    // Calculating standard deviation for each feature set
+    for(auto j = 0; j < number_of_columns_m; ++j)
+    {
+        for(auto i = 0; i < number_of_rows_m; ++i)
+        {
+            counter += std::pow((this->input.values[i][j] - scales[j][0]), 2);
+        }
+        scales[j][1] = std::sqrt(counter/(number_of_rows_m-1));
+        counter = 0;
+    }
+
+    this->scaling_factors = scales;
+
+    // -----------------------------------------------------------------------------------------------
+    // Printing results
+    // -----------------------------------------------------------------------------------------------
+
+    std::cout << std::endl << "Feature scales:" << std::endl << std::endl;
+
+    for(auto i : this->scaling_factors)
+    {
+        std::cout << "\tmean = " << std::setw(7) << i[0] << " sd = " << i[1] << std::endl;
+    }
+}
+
+// void scale_to_standard(Matrix &m)
+// {   
+
+// }
+
+//TODO
+void NeuralNetwork::train(int number_of_epochs)
+{
+    for(auto i = 0; i < number_of_epochs; ++i)
+    {
+        feed_forward();
+
+
+
+
+        // for(auto value : this->output_layer.values)
+        // {
+        //     value = round(value);
+        // }
+    }
+}
+
+Matrix NeuralNetwork::predict(Matrix &x)
+{
+    Matrix prediction_layer_1 = x * this->weights_1;
+    apply_piecewise(prediction_layer_1, LeakyReLU);
+
+    Matrix results = prediction_layer_1 * this->weights_2;
+    apply_piecewise(results, sigmoid);
+
+    return results;
+}
+
 void NeuralNetwork::feed_forward()
 {
     this->layer_1 = this->input * this->weights_1;
     // apply_piecewise(this->layer_1, &NeuralNetwork::LeakyReLU); //TODO check which version is workin in:
-    apply_piecewise(this->layer_1, &LeakyReLU);
+    apply_piecewise(this->layer_1, LeakyReLU);
 
     this->output_layer = this->layer_1 * this->weights_2;
     // apply_piecewise(this->output_layer, &NeuralNetwork::sigmoid); //TODO check which version is workin in:
-    apply_piecewise(this->output_layer, &sigmoid);
+    apply_piecewise(this->output_layer, sigmoid);
 }
 
 void NeuralNetwork::back_propagation()
@@ -34,22 +121,55 @@ void NeuralNetwork::back_propagation()
 
     auto m = this->input.values.size();
 
-    auto output_copy = this->output;
-    sigmoid_derivative(output_copy);
+    auto output_copy = this->output_layer;
+    apply_piecewise(output_copy, &sigmoid_derivative);
 
     auto layer_1_copy = this->layer_1;
-    LeakyReLU_derivative(layer_1_copy);
+    apply_piecewise(layer_1_copy, &LeakyReLU_derivative);
 
     //TODO Double check logic below
 
-    auto derived_weights2 = -(1/m)*(transpose(this->layer_1)*matrix_piecewise_multiplication((this->y - this->output_layer), output_copy));
-    auto derived_weights1 = -(1/m)*(transpose(this->input)*((matrix_piecewise_multiplication((this->y - this->output_layer), output_copy)*transpose(this->weights_2)), layer_1_copy));
+    auto derived_weights2 = -(1/m) 
+                            
+                            * 
+
+                            (
+                                transpose(this->layer_1) 
+
+                                *
+
+                                matrix_piecewise_multiplication(
+                                                                    (this->y - this->output_layer), 
+                                                                    output_copy
+                                                               )
+                             );
+
+    auto derived_weights1 = -(1/m) 
+
+                            * 
+
+                            (
+                                transpose(this->input) 
+
+                                * 
+
+                                matrix_piecewise_multiplication(
+                                                                  (
+                                                                      matrix_piecewise_multiplication((this->y - this->output_layer), output_copy)
+
+                                                                      *
+
+                                                                      transpose(this->weights_2)
+                                                                  ), 
+                                                                  layer_1_copy
+                                                                )
+                             );
 
     this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
-    this->weights_1 = this->weights_1 - learning_rate * derived_weights1; 
+    this->weights_1 = this->weights_1 - learning_rate * derived_weights1;
 }
 
-Matrix matrix_piecewise_multiplication(Matrix &m1, Matrix &m2)
+Matrix NeuralNetwork::matrix_piecewise_multiplication(Matrix m1, Matrix m2)
 {
     auto number_of_rows_m1 = m1.values.size();
     auto number_of_columns_m1 = m1.values[0].size();
@@ -57,7 +177,7 @@ Matrix matrix_piecewise_multiplication(Matrix &m1, Matrix &m2)
     Matrix result_of_operation = Matrix(number_of_rows_m1, number_of_columns_m1);
 
     for (auto i = 0; i < number_of_rows_m1; ++i)
-        for (auto j = 0; j < number_of_columns_m1.size(); ++j)
+        for (auto j = 0; j < number_of_columns_m1; ++j)
         {
             result_of_operation.values[i][j] = m1.values[i][j] * m2.values[i][j]; 
         }
@@ -67,8 +187,11 @@ Matrix matrix_piecewise_multiplication(Matrix &m1, Matrix &m2)
 
 void NeuralNetwork::apply_piecewise(Matrix &m, void (*func)(double&))
 {
-    for(auto i = 0; i < m.values.size(); ++i)
-        for(auto j = 0; j < m.values[0].size(); ++j)
+    auto number_of_rows_m = m.values.size();
+    auto number_of_columns_m = m.values[0].size();
+
+    for(auto i = 0; i < number_of_rows_m; ++i)
+        for(auto j = 0; j < number_of_columns_m; ++j)
         {
             func(m.values[i][j]);
         }
@@ -76,12 +199,12 @@ void NeuralNetwork::apply_piecewise(Matrix &m, void (*func)(double&))
 
 Matrix NeuralNetwork::transpose(Matrix &m)
 {
-    auto m_rows = m.values.size();
-    auto m_columns = m.values[0].size();
-    Matrix transposed_copy = Matrix(m_columns, m_rows);
+    auto number_of_rows_m = m.values.size();
+    auto number_of_columns_m = m.values[0].size();
+    Matrix transposed_copy = Matrix(number_of_columns_m, number_of_rows_m);
 
-    for(auto i = 0; i < m_rows; ++i)
-        for(auto j = 0; j < m_columns; ++j)
+    for(auto i = 0; i < number_of_rows_m; ++i)
+        for(auto j = 0; j < number_of_columns_m; ++j)
         {
             transposed_copy.values[j][i] = m.values[i][j];
         }

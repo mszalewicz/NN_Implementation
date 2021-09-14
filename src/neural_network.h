@@ -10,6 +10,8 @@ class NeuralNetwork
 		Matrix weights_2;
 		Matrix output_layer;
 
+		std::vector<std::vector<double>> scaling_factors;
+
 	public:
 		NeuralNetwork(Matrix x_input, Matrix y_input, int height_of_hidden_layer);
 
@@ -20,10 +22,14 @@ class NeuralNetwork
 
 		void feed_forward();
 		void back_propagation();
+		Matrix predict(Matrix &x);
+		void train(int number_of_epochs);
 
 		void apply_piecewise(Matrix &m, void (*func)(double&));
 
+		void find_scales();
+
 		Matrix transpose(Matrix &m);
-		Matrix matrix_piecewise_multiplication(Matrix &m1, Matrix &m2);
+		Matrix matrix_piecewise_multiplication(Matrix m1, Matrix m2);
 		Matrix seed_normal_random_values_into_matrix(int rows, int columns);
 };
