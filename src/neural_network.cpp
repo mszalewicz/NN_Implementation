@@ -1,9 +1,10 @@
 #include <chrono>
 #include <cmath>
-#include <random>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <random>
 
+#include "font.h"
 #include "matrix.h"
 #include "neural_network.h"
 
@@ -14,8 +15,8 @@ NeuralNetwork::NeuralNetwork(Matrix x_input, Matrix y_input, int height_of_hidde
 
     this->input = x_input;
     this->y = y_input;
-    this->weights_1 = seed_normal_random_values_into_matrix(this->input.number_of_columns, height_of_hidden_layer);
-    this->weights_2 = seed_normal_random_values_into_matrix(height_of_hidden_layer, number_of_output_classes);
+    this->weights_1 = seed_normal_random_values(this->input.number_of_columns, height_of_hidden_layer);
+    this->weights_2 = seed_normal_random_values(height_of_hidden_layer, number_of_output_classes);
     this->output_layer = Matrix(this->y.number_of_rows, this->y.number_of_columns); // populated with zeros
 }
 
@@ -47,22 +48,11 @@ void NeuralNetwork::find_scales()
         {
             counter += std::pow((this->input.values[i][j] - scales[j][0]), 2);
         }
-        scales[j][1] = std::sqrt(counter/(number_of_rows_m)); // or /(number_of_rows_m - 1)
+        scales[j][1] = std::sqrt(counter/(number_of_rows_m));
         counter = 0;
     }
 
     this->scaling_factors = scales;
-
-    // -----------------------------------------------------------------------------------------------
-    // Print results
-    // -----------------------------------------------------------------------------------------------
-
-    // std::cout << std::endl << "Feature scales:" << std::endl << std::endl;
-
-    // for(auto i : this->scaling_factors)
-    // {
-    //     std::cout << "\tmean = " << std::setw(7) << i[0] << " sd = " << i[1] << std::endl;
-    // }
 }
 
 void NeuralNetwork::scale_to_standard()
@@ -78,32 +68,71 @@ void NeuralNetwork::scale_to_standard()
         }
 }
 
-//TODO
-void NeuralNetwork::train(int number_of_epochs)
+void NeuralNetwork::work(Matrix &x_test, Matrix &y_test, int number_of_epochs)
 {
+    auto train_number_of_entries = this->y.values.size();
+    auto test_number_of_entries = y_test.values.size();
+    double train_accuracy = 0;
+    double test_accuracy = 0;
+    double correct_predictions_train = 0;
+    double correct_predictions_test = 0;
+
     for(auto i = 0; i < number_of_epochs; ++i)
     {
+        // Starting epoch
+
         feed_forward();
 
-        // TODO <- round the results
+        Matrix y_predict_train = this->output_layer;
+        y_predict_train.choose_most_probable();
+
+        Matrix y_predict_test = predict(x_test);
+        y_predict_test.choose_most_probable();
+
+        // Calculating the accuracies
+
+        correct_predictions_train = 0;
+
+        for(auto x = 0; x < train_number_of_entries; ++x)
+        {
+            if(y_predict_train.values[x] == this->y.values[x]) ++correct_predictions_train;
+        }
+
+        correct_predictions_test = 0;
+
+        for(auto x = 0; x < test_number_of_entries; ++x)
+        {
+            if(y_predict_test.values[x] == y_test.values[x]) ++correct_predictions_test;
+        }
+
+        train_accuracy = correct_predictions_train/train_number_of_entries;
+        test_accuracy = correct_predictions_test/test_number_of_entries;
+
+        // Back propagation
 
         back_propagation();
 
+        // Printing learning process data
 
-        // for(auto value : this->output_layer.values)
-        // {
-        //     value = round(value);
-        // }
+        int width_of_print = (int) std::floor(std::log10(number_of_epochs));
+
+        if(i > 0) Font::erase_n_lines(3);
+
+        std::cout << std::setw(16) << "Epoch: " << std::setw(width_of_print) << i+1 << " / " << std::setw(width_of_print) << number_of_epochs << "\n"
+                  << std::setw(16) << "Train Accuracy: " << std::round(train_accuracy * 100) << " %\n"
+                  << std::setw(16) <<"Test Accuracy: " << std::round(test_accuracy * 100) << " %\n";
     }
+
+    std::cout << "\n";
 }
 
 Matrix NeuralNetwork::predict(Matrix &x)
 {
     Matrix prediction_layer_1 = x * this->weights_1;
-    apply_piecewise(prediction_layer_1, LeakyReLU);
+    apply_piecewise(prediction_layer_1, &LeakyReLU);
 
     Matrix results = prediction_layer_1 * this->weights_2;
-    apply_piecewise(results, sigmoid);
+    apply_piecewise(results, &sigmoid);
 
     return results;
 }
@@ -111,27 +140,24 @@ Matrix NeuralNetwork::predict(Matrix &x)
 void NeuralNetwork::feed_forward()
 {
     this->layer_1 = this->input * this->weights_1;
-    // apply_piecewise(this->layer_1, &NeuralNetwork::LeakyReLU); //TODO check which version is workin in:
-    apply_piecewise(this->layer_1, LeakyReLU);
+    apply_piecewise(this->layer_1, &LeakyReLU);
 
     this->output_layer = this->layer_1 * this->weights_2;
-    // apply_piecewise(this->output_layer, &NeuralNetwork::sigmoid); //TODO check which version is workin in:
-    apply_piecewise(this->output_layer, sigmoid);
+    apply_piecewise(this->output_layer, &sigmoid);
 }
 
 void NeuralNetwork::back_propagation()
 {
-    constexpr auto learning_rate = 0.5;
+    constexpr double learning_rate = 0.5;
 
-    auto m = this->input.values.size();
+    double m = this->input.values.size();
 
     auto output_copy = this->output_layer;
     apply_piecewise(output_copy, &sigmoid_derivative);
 
+
     auto layer_1_copy = this->layer_1;
     apply_piecewise(layer_1_copy, &LeakyReLU_derivative);
-
-    // //TODO Double check logic below
 
     auto derived_weights2 = -(1/m) 
                             
@@ -169,19 +195,9 @@ void NeuralNetwork::back_propagation()
                                                                 )
                              );
 
+
     this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
     this->weights_1 = this->weights_1 - learning_rate * derived_weights1;
-
-    // auto number_of_rows_w = this->weights_2.values.size();
-    // auto number_of_columns_w = this->weights_2.values[0].size();
-
-    // auto number_of_rows_w2 = derived_weights2.values.size();
-    // auto number_of_columns_w2 = derived_weights2.values[0].size();
-
-    // std::cout << std::endl << "w_rows: " << number_of_rows_w << ", w_cols: " << number_of_columns_w << std::endl << std::endl;
-    // std::cout << std::endl << "w2_rows: " << number_of_rows_w2 << ", w2_cols: " << number_of_columns_w2 << std::endl << std::endl;
-
-
 }
 
 Matrix NeuralNetwork::matrix_piecewise_multiplication(Matrix m1, Matrix m2)
@@ -256,7 +272,7 @@ void NeuralNetwork::sigmoid_derivative(double &x)
     x = x_copy * (1 - x_copy);
 }
 
-Matrix NeuralNetwork::seed_normal_random_values_into_matrix(int rows, int columns)
+Matrix NeuralNetwork::seed_normal_random_values(int rows, int columns)
 {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);

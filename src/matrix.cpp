@@ -1,3 +1,5 @@
+#include <cmath>
+#include <iostream>
 #include <vector>
 
 #include "matrix.h"
@@ -22,6 +24,53 @@ Matrix::Matrix(std::vector<std::vector<double>> values_to_insert)
 	this->number_of_rows = values_to_insert.size();
 	this->number_of_columns = values_to_insert[0].size();
 	this->values = values_to_insert;
+}
+
+void Matrix::print_me()
+{
+	std::cout << "\n";
+
+	for(auto row : this->values)
+	{
+		for(auto cell : row)
+		{
+			std::cout << cell << " ";
+		}		
+		std::cout << "\n";
+	}
+
+	std::cout << "\n";
+}
+
+void Matrix::round()
+{
+	for (auto i = 0; i < this->number_of_rows; ++i)
+		for(auto j = 0; j < this->number_of_columns; ++j)
+		{
+			this->values[i][j] = std::round(this->values[i][j]);
+		}
+}
+
+void Matrix::choose_most_probable()
+{
+	int best_position = 0;
+	double best_value = 0;
+
+	for (auto i = 0; i < this->number_of_rows; ++i)
+	{
+		for(auto j = 0; j < this->number_of_columns; ++j)
+		{
+			if(this->values[i][j] > best_value)
+			{
+				best_value = this->values[i][j];
+				best_position = j;
+			}
+			this->values[i][j] = 0;
+		}
+
+		this->values[i][best_position] = 1;
+		best_value = 0;	
+	}
 }
 
 // Matrix multiplication

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "font.h"
 
 const std::string Font::BLUE = "\033[94m";
@@ -18,4 +20,12 @@ std::string Font::PaintText(std::string original_string,
 	original_string.append(ENDC);
 
 	return original_string;
+}
+
+void Font::erase_n_lines(int n)
+{
+	for(auto i = 0; i < n; ++i)
+	{
+		std::cout << "\033[F" <<"\033[2K";
+	}
 }

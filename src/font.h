@@ -4,7 +4,7 @@
 
 class Font 
 {
-    /// Adds color to terminal font.
+    /// Adds color to terminal font and manipulates terminal lines
     public:
         static const std::string BLUE;
         static const std::string BOLD;
@@ -17,4 +17,6 @@ class Font
 
         std::string static PaintText(std::string original_string, 
                                      const std::string& color_name);
+        
+        void static erase_n_lines(int n);
 };

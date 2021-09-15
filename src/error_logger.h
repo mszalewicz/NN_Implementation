@@ -4,7 +4,7 @@
 
 class ErrorLogger 
 {
-    ///
+    /// Logs errors to the local 'log.txt' file
     public:
         ErrorLogger(std::string&);
         void static Init(std::string&);
