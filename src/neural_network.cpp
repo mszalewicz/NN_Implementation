@@ -10,7 +10,7 @@
 NeuralNetwork::NeuralNetwork(Matrix x_input, Matrix y_input, int height_of_hidden_layer)
 {
     // Height of the output layer (set specifically to this particular problem)
-    constexpr auto number_of_output_classes = 10;
+    constexpr auto number_of_output_classes = 3;
 
     this->input = x_input;
     this->y = y_input;
@@ -169,8 +169,19 @@ void NeuralNetwork::back_propagation()
                                                                 )
                              );
 
-    // this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
+    this->weights_2 = this->weights_2 - learning_rate * derived_weights2;
     this->weights_1 = this->weights_1 - learning_rate * derived_weights1;
+
+    // auto number_of_rows_w = this->weights_2.values.size();
+    // auto number_of_columns_w = this->weights_2.values[0].size();
+
+    // auto number_of_rows_w2 = derived_weights2.values.size();
+    // auto number_of_columns_w2 = derived_weights2.values[0].size();
+
+    // std::cout << std::endl << "w_rows: " << number_of_rows_w << ", w_cols: " << number_of_columns_w << std::endl << std::endl;
+    // std::cout << std::endl << "w2_rows: " << number_of_rows_w2 << ", w2_cols: " << number_of_columns_w2 << std::endl << std::endl;
+
+
 }
 
 Matrix NeuralNetwork::matrix_piecewise_multiplication(Matrix m1, Matrix m2)

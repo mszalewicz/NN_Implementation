@@ -7,6 +7,9 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <algorithm>
+#include <iterator>
+#include <random>
 
 
 #include "error_logger.h"
@@ -272,7 +275,11 @@ void FailedExecution()
 }
 
 
-std::tuple<bool, std::vector<std::string>> read_csv(std::string &file_path)
+std::tuple<
+            bool, 
+            std::vector<std::string>
+          >
+read_csv(std::string &file_path)
 {
     std::vector<std::string> buffer;
     std::fstream file_stream;
@@ -300,7 +307,11 @@ std::tuple<bool, std::vector<std::string>> read_csv(std::string &file_path)
     return {true, buffer};
 }
 
-std::tuple<bool, std::vector<std::vector<std::string>>> get_data(std::vector<std::string> file_data)
+std::tuple<
+            bool, 
+            std::vector<std::vector<std::string>>
+          >
+get_data(std::vector<std::string> file_data)
 {
     std::vector<std::vector<std::string>> extracted_data;
 
@@ -342,7 +353,12 @@ std::tuple<bool, std::vector<std::vector<std::string>>> get_data(std::vector<std
     return {true, extracted_data};
 }
 
-std::tuple<bool, Matrix, Matrix> separate_and_clean_data(std::vector<std::vector<std::string>> data)
+std::tuple<
+            bool, 
+            Matrix, 
+            Matrix
+          >
+separate_and_clean_data(std::vector<std::vector<std::string>> data)
 {
     std::vector<std::vector<double>> features_collection;
     std::vector<std::vector<double>> labels_collection;
@@ -383,6 +399,38 @@ std::tuple<bool, Matrix, Matrix> separate_and_clean_data(std::vector<std::vector
     return {true, features, labels};
 }
 
+std::tuple<
+            std::vector<std::vector<std::string>>,
+            std::vector<std::vector<std::string>>
+          > 
+split_data(std::vector<std::vector<std::string>> complete_set, double size_of_test_set)
+{
+    int number_of_test_elements = std::floor(complete_set.size() * size_of_test_set);
+    int number_of_train_elements = complete_set.size() - number_of_test_elements;
+
+    std::vector<std::vector<std::string>> testing_set = std::vector<std::vector<std::string>>(number_of_test_elements, std::vector<std::string>(4, "          "));
+    std::vector<std::vector<std::string>> training_set = std::vector<std::vector<std::string>>(number_of_train_elements, std::vector<std::string>(4, "          "));
+
+    // Randomize positions of the vector elements
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(complete_set.begin(), complete_set.end(), g);
+
+    // Split testing elements
+    auto start_iterator = complete_set.begin();
+    auto end_iterator = std::next(complete_set.begin(), number_of_test_elements);
+
+    std::copy(start_iterator, end_iterator, testing_set.begin());
+
+    // // Split testing elements
+    start_iterator = std::next(complete_set.begin(), number_of_test_elements);
+    end_iterator = complete_set.end();
+
+    std::copy(start_iterator, end_iterator, training_set.begin());
+
+    return {training_set, testing_set};
+}
+
 int main(int argc, char *argv[]) 
 {
 
@@ -392,13 +440,13 @@ int main(int argc, char *argv[])
     std::string logger_directory = std::filesystem::current_path().string();
     ErrorLogger::Init(logger_directory);
 
-
     // TODO read as argument
     std::string file_path = "C:/Users/Urizen/Documents/Projekty/cpp/NN_Implementation/src/iris.csv";
 
     // -----------------------------------------------------------------------------------------------
 
     AcknowledgeStepStart("Reading data");
+
     auto [file_read_correctly, file_content] = read_csv(file_path);
     if(file_read_correctly) ConfirmExecution();
     
@@ -413,14 +461,22 @@ int main(int argc, char *argv[])
     // -----------------------------------------------------------------------------------------------
 
     AcknowledgeStepStart("Data extraction");
+
+    constexpr double testing_set_size = 0.2;
+
     auto [data_extracted, data] = get_data(file_content);
+    auto [training_set, testing_set] = split_data(data, testing_set_size);
+
     if(data_extracted) ConfirmExecution(); else return 1;
 
     // -----------------------------------------------------------------------------------------------
 
     AcknowledgeStepStart("Data cleaning");
-    auto [cleaning_done, features, labels] = separate_and_clean_data(data);
-    if(cleaning_done) ConfirmExecution(); else return 1;
+
+    auto [training_cleaning_done, X_train, Y_train] = separate_and_clean_data(training_set);
+    auto [testing_cleaning_done, X_test, Y_test] = separate_and_clean_data(testing_set);
+
+    if(training_cleaning_done && testing_cleaning_done) ConfirmExecution(); else return 1;
 
     // -----------------------------------------------------------------------------------------------
 
@@ -429,15 +485,13 @@ int main(int argc, char *argv[])
 
     int height_of_hidden_layer = 4; 
 
-    NeuralNetwork nn = NeuralNetwork(features, labels, height_of_hidden_layer);
+    NeuralNetwork nn = NeuralNetwork(X_train, Y_train, height_of_hidden_layer);
     nn.find_scales();
     nn.scale_to_standard();
 
     AcknowledgeStepStart("Neural network training");
     nn.train(1);
     ConfirmExecution();
-
-
 
     // AcknowledgeStepStart("Normalize features");
     // auto [normalization_done] = normal_scaler(features);
